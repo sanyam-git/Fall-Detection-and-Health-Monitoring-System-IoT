@@ -1,0 +1,11 @@
+IMPORTANT : turn SEND_SMS boolean to true and verify numbers to send messages to 
+
+- store all keys safely
+
+- install dependencies (requirements.txt)
+
+
+---------------------------------------------------------------
+- try to make code more modular 
+
+- rmeove comments and other clutter and extra print statemnets (if required)

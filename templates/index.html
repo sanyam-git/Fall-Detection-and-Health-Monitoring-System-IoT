@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Fall Detection and Heart Rate Monitoring</title>
+      <link rel="icon" type="image/png" href="static/images/favicon.png">
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+      <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha256-t9UJPrESBeG2ojKTIcFLPGF7nHi2vEc7f5A2KpH/UBU=" crossorigin="anonymous"></script>
+      <style>
+         .navbar {
+         box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .1);
+         }
+         @media (min-width: 767.98px) {
+         .navbar {
+         top: 0;
+         position: sticky;
+         z-index: 999;
+         }
+         }
+      </style>
+   </head>
+   <body>
+      <nav class="navbar navbar-light bg-light p-3">
+         <div class="d-flex col-12 col-md-3 col-lg-2 mb-2 mb-lg-0 flex-wrap flex-md-nowrap justify-content-between">
+            <a class="navbar-brand" href="#"> Fall Detection and Heart Rate Monitoring &nbsp; <i class="fa fa-medkit fa-lg" aria-hidden="true"></i>
+            </a>
+         </div>
+         <div class="col-12 col-md-5 col-lg-8 d-flex align-items-center justify-content-md-end mt-3 mt-md-0">
+            <div class="dropdown">
+               <button class="btn btn-secondary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false"> Call <b>108</b> in case of any emergency </button>
+            </div>
+         </div>
+      </nav>
+      <div class="container-fluid">
+      <div class="row">
+         <main class="col-md-12 ml-sm-auto col-lg-12 px-md-4 py-4">
+            <h1 class="h2">Dashboard</h1>
+            <p>Get instant updates <b>heart rate</b> and emergency <b>fall detection</b> of your beloved ones</p>
+            <div class="row my-4">
+               <div class="col-12 col-md-6 col-lg-3 mb-4 mb-lg-0">
+                  <div class="card">
+                     <h5 class="card-header">Device Connection</h5>
+                     <div class="card-body">
+                        <div id="alpha_one"></div>
+                        <p id="alpha_delay" class="card-text"></p>
+                        <p id="alpha_time" class="card-text"></p>
+                     </div>
+                  </div>
+               </div>
+               <div class="col-12 col-md-6 mb-4 mb-lg-0 col-lg-3">
+                  <div class="card">
+                     <h5 class="card-header">Heart Rate Sensor</h5>
+                     <div class="card-body">
+                        <div id="beta_one"></div>
+                        <p id="beta_delay" class="card-text"></p>
+                        <p id="beta_time" class="card-text"></p>
+                     </div>
+                  </div>
+               </div>
+               <div class="col-12 col-md-6 mb-4 mb-lg-0 col-lg-3">
+                  <div class="card">
+                     <h5 class="card-header">Latest Heart Rate</h5>
+                     <div class="card-body">
+                        <div id="beta_heart_rate" class="text-success"></div>
+                        <p class="card-text" id="beta_delay_extra"></p>
+                        <p class="card-text" id="beta_average"></p>
+                     </div>
+                  </div>
+               </div>
+               <div class="col-12 col-md-6 mb-4 mb-lg-0 col-lg-3">
+                  <div class="card">
+                     <h5 class="card-header">Last Detected Fall</h5>
+                     <div class="card-body" id="gamma_main">
+                        <h5 class="card-title text-danger" id="gamma_time"></h5>
+                        <p class="card-text" id="gamma_delay"></p>
+                        <p class="card-text" id="gamma_heart_rate"></p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="row">
+               <div class="col-12 col-xl-12 mb-12 mb-lg-10">
+                  <div class="col-12 col-xl-12">
+                     <div class="card">
+                        <h5 class="card-header">Heart Rate Trends</h5>
+                        <div class="card-body" id="chart-body">
+                           
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <footer class="pt-5 d-flex justify-content-between">
+                  <span>project developed for the Internet of Things Course Project, BITS Pilani</span>
+               </footer>
+         </main>
+         </div>
+      </div>
+      <script type="text/javascript">
+      var ping_time = 60000; //in ms    
+var url = '/get_data';
+main_function();
+setInterval(main_function, ping_time);
+
+function main_function() {
+    var data = 'hello';
+    send_request('GET', url, data, callback);
+
+    function callback(response) {
+        alpha(response);
+        beta(response);
+        gamma(response);
+        delta(response);
+    }
+}
+
+function alpha(response) {
+    if (response['alpha_one'] == 0)
+        alpha_one = '<h5 class="card-title text-danger">OFF</h5>';
+    else alpha_one = '<h5 class="card-title text-success">ON</h5>';
+    document.getElementById('alpha_one').innerHTML = alpha_one;
+    document.getElementById('alpha_time').innerHTML = response['alpha_time'];
+    document.getElementById('alpha_delay').innerHTML = 'detected ' + response['alpha_delay'] + ' ago';
+}
+
+function beta(response) {
+    if (response['alpha_one'] == 0) {
+        beta_one = '<h5 class="card-title text-danger">OFF</h5>';
+        beta_delay = 'detected ' + response['alpha_delay'] + ' ago';
+        beta_time = response['alpha_time'];
+    } else {
+        if (response['beta_one'] == 0)
+            beta_one = '<h5 class="card-title text-danger">NOT WEARING</h5>';
+        else beta_one = '<h5 class="card-title text-success">WEARING</h5>';
+        beta_time = response['beta_time'];
+        beta_delay = 'recorded ' + response['alpha_delay'] + ' ago';
+    }
+    document.getElementById('beta_one').innerHTML = beta_one;
+    document.getElementById('beta_time').innerHTML = beta_time;
+    document.getElementById('beta_delay').innerHTML = beta_delay;
+
+    // next tile from here
+    beta_heart_rate = '<h5 class="card-title">' + response['beta_heart_rate'] + '&nbsp;&nbsp;<i class="fa fa-heartbeat"></i></h5>';
+    document.getElementById('beta_heart_rate').innerHTML = beta_heart_rate;
+    document.getElementById('beta_average').innerHTML = 'Average heart rate is <b>' + response['beta_heart_average'] + ' bpm</b>';
+    document.getElementById('beta_delay_extra').innerHTML = beta_delay;
+}
+
+function gamma(response) {
+    if (response['gamma_exist']) {
+        var temp = response['gamma_time'].replaceAll('(', '');
+        var temp2 = temp.replaceAll(')', '');
+        document.getElementById('gamma_time').innerHTML = temp2;
+        document.getElementById('gamma_time').className = "card-title text-danger";
+        document.getElementById('gamma_delay').innerHTML = 'detected ' + response['gamma_delay'] + ' ago';
+        temp = response['gamma_heart_rate'];
+        if (temp < 0) temp = document.getElementById('gamma_heart_rate').innerHTML='user not wearing the heart rate sensor during fall';
+        else document.getElementById('gamma_heart_rate').innerHTML = 'Heart rate during fall : <b>' + temp + ' bpm</b>';
+    } else {
+        temp = '<h5 class="card-title text-success" id="gamma_time">No fall Detected Yet</h5>\
+                                     <p class="card-text" id="gamma_delay">&nbsp;</p>\
+                                     <p class="card-text" id="gamma_heart_rate">&nbsp;</p>'
+        document.getElementById('gamma_main').innerHTML = temp;
+    }
+
+}
+
+function delta(response) {
+    render_chart(response['delta_lables'], response['delta_data']);
+}
+
+
+function render_chart(labels, data) {
+    document.getElementById('chart-body').innerHTML = '';
+    document.getElementById('chart-body').innerHTML = '<canvas id="main-chart" width="400" height="400"></canvas>';
+    var ctx = document.getElementById('main-chart').getContext('2d');
+
+    var chart = new Chart(ctx, {
+
+        type: 'line',
+
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Heart Rate',
+                //backgroundColor: 'rgb(94, 221, 255)',
+                borderColor: 'rgb(0,0,0)',
+                borderWidth: 1,
+                pointBackgroundColor: 'rgb(17, 194, 59)',
+                data: data
+            }]
+        },
+
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            },
+        }
+    });
+}
+
+function send_request(type, url, data, callback) {
+    var request = new XMLHttpRequest();
+    request.open(type, url, true);
+    if (type == 'GET') request.send();
+    else if (type == 'POST') {
+        var payload = JSON.stringify(data);
+        request.send(payload);
+    }
+    request.onload = () => {
+        var response = JSON.parse(request.responseText);
+        callback(response);
+    };
+}
+      </script>
+   </body>
+</html>
