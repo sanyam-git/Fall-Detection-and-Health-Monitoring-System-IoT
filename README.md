@@ -19,6 +19,7 @@ We set up the IoT server on Azure IoT Hub.  We configured a script on the server
 * Scalable (can add additional sensors without modifying the existing sensors).
 * Edge processing (all the data is processed at the edge nodes before transmission to the cloud).
 * Visualization (the data is visualized in the form of a web dashboard).
+* 
 * Robust (the system does not falter to any false detection because of the trigger based algorithm).
 * Real time alert (concerned people are notified in real time about any unusual activity).
 
